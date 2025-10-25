@@ -6,16 +6,63 @@ cd to the `examples/snippets/clients` directory and run:
 """
 
 from mcp.server.fastmcp import FastMCP
+import os
 
 # Create an MCP server
-mcp = FastMCP("Demo")
+mcp = FastMCP("User's Notes")
+myNotesFile= os.path.join(os.path.dirname(__file__),"MY_NOTES.txt")
 
+def ensureFile():
+    if not os.path.exists(myNotesFile):
+        with open(myNotesFile, "w") as f:
+            f.write("")
 
-# Add an addition tool
+# Add user's Notes
 @mcp.tool()
-def add(a: int, b: int) -> int:
-    """Add two numbers"""
-    return a + b
+def addNote(message: str) -> str:
+    """
+    Append a new note to the notes files
+    
+    args: 
+        message (str): the note content to be added to our user's notes
+    returns:
+        str: confirmation of the note being saved
+    """
+    ensureFile()
+    with open(myNotesFile, "a") as f:
+        f.write(message + "\n")
+    return "Note has ben saved successfully!"
+
+
+@mcp.tool()
+def readNotes() -> str:
+    """
+    Read the users current note file
+    
+    returns:
+        str: contents of our note so far
+    """
+    ensureFile()
+    with open(myNotesFile, "r") as f:
+        #we read the content inside the notes files and remove white spaces
+        content = f.read().strip()
+    return content or "No note found!"
+
+@mcp.prompt()
+def noteSummary()->str:
+    """
+    Read the users current note file, and create a summary out of it
+    
+    returns:
+        str: summary of notes according to prompt
+    """
+    ensureFile()
+    with open(myNotesFile, "r") as f:
+        #we read the content inside the notes files and remove white spaces
+        content = f.read().strip()
+        if not content:
+            return "No note found!"    
+    return f"Summarize the major points on these notes, and don't leave anything important out. Notes: {content}"
 
 
 # Add a dynamic greeting resource
