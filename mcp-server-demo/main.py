@@ -48,13 +48,28 @@ def readNotes() -> str:
         content = f.read().strip()
     return content or "No note found!"
 
+@mcp.resource("MY_NOTES://latest")
+def getLatestNote():
+    """
+    get the most recent note added
+    
+    returns:
+        str: contents of the latest note
+    """
+    ensureFile()
+    with open(myNotesFile, "r") as f:
+        lines = f.readlines()
+    #we return the last line added(aka the last note)
+    return lines[-1] if lines else "No notes found"
+
+
 @mcp.prompt()
 def noteSummary()->str:
     """
     Read the users current note file, and create a summary out of it
     
     returns:
-        str: summary of notes according to prompt
+        str: summary of notes according to prompt. if the note does not exists a placeholder message will be returned
     """
     ensureFile()
     with open(myNotesFile, "r") as f:
