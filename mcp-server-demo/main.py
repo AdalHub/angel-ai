@@ -48,7 +48,7 @@ def readNotes() -> str:
         content = f.read().strip()
     return content or "No note found!"
 
-@mcp.resource("MY_NOTES://latest")
+@mcp.resource("mynotes://local/latest")
 def getLatestNote():
     """
     get the most recent note added
